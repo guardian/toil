@@ -10,23 +10,26 @@ import (
 	"time"
 )
 
-// Go doesn't have Set in stdlib so use a map.
-var services = map[string]struct{}{
-	"riff-raff": {},
-	"teamcity":  {},
-	"amigo":     {},
-}
+var home, _ = os.UserHomeDir()
+var toilHome = filepath.Join(home, "toil")
 
 func main() {
+
 	m := flag.String("m", "Describe your problem here.", "Optional description of task.")
+	dryRun := flag.Bool("dryRun", false, "Prints out toil file and exits without writing to toil home and remote.")
+	h := flag.Bool("h", false, "Help info.")
+
 	flag.Parse()
 	service := flag.Arg(0)
 
-	if _, ok := services[service]; !ok {
-		fmt.Printf("Unrecognised or missing service: '%s'\n", service)
-		fmt.Println("Supported services are: riff-raff, teamcity, amigo.")
+	if *h {
+		fmt.Println("$ toil [-flag ...] [service]")
+		flag.PrintDefaults()
 		os.Exit(1)
 	}
+
+	ensureToilHome()
+	validateService(service)
 
 	out, err := exec.Command("git", "config", "user.email").CombinedOutput()
 	check(err, fmt.Sprintf("Unable to get user's git email: %s", string(out)))
@@ -41,17 +44,9 @@ service: %s
 
 	data = strings.TrimSpace(data)
 
-	println(data)
-	os.Exit(0)
-
-	home, _ := os.UserHomeDir()
-	toilHome := filepath.Join(home, "toil")
-
-	// if ~/toil doesn't exist clone into it
-	_, err = os.Stat(toilHome)
-	if os.IsNotExist(err) {
-		out, err := execGit(home, "clone", "git@github.com:guardian/toil-records.git", "toil")
-		check(err, fmt.Sprintf("Unable to clone from git@github.com:guardian/toil-records.git: %s\n%v", string(out), err))
+	if *dryRun {
+		println(data)
+		os.Exit(0)
 	}
 
 	fileName := time.Now().Format(time.RFC3339)
@@ -82,4 +77,32 @@ func check(err error, msg string) {
 		fmt.Println(msg)
 		os.Exit(1)
 	}
+}
+
+func ensureToilHome() {
+	_, err := os.Stat(toilHome)
+	if os.IsNotExist(err) {
+		out, err := execGit(home, "clone", "git@github.com:guardian/toil-records.git", "toil")
+		check(err, fmt.Sprintf("Unable to clone from git@github.com:guardian/toil-records.git: %s\n%v", string(out), err))
+	}
+}
+
+func validateService(service string) {
+	services := readServicesConfig()
+
+	for _, s := range services {
+		if s == service {
+			return
+		}
+	}
+
+	fmt.Printf("Unrecognised or missing service: '%s'. Must exist in ~/toil/services.txt.\n", service)
+	os.Exit(1)
+}
+
+func readServicesConfig() []string {
+	servicesData, err := os.ReadFile(filepath.Join(toilHome, "services.txt"))
+	check(err, fmt.Sprintf("Unable to read ~/toil/services.txt file. Should contain a list of services separated by newline: %v", err))
+
+	return strings.Split(string(servicesData), "\n")
 }
