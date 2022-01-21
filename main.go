@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -18,12 +19,12 @@ var services = map[string]struct{}{
 
 func main() {
 	m := flag.String("m", "Describe your problem here.", "Optional description of task.")
-	service := os.Args[1]
-
 	flag.Parse()
+	service := flag.Arg(0)
 
 	if _, ok := services[service]; !ok {
 		fmt.Printf("Unrecognised or missing service: '%s'\n", service)
+		fmt.Println("Supported services are: riff-raff, teamcity, amigo.")
 		os.Exit(1)
 	}
 
@@ -31,11 +32,17 @@ func main() {
 	check(err, fmt.Sprintf("Unable to get user's git email: %s", string(out)))
 
 	data :=
-		fmt.Sprintf(`responsible: %s
+		fmt.Sprintf(`
+responsible: %s
 service: %s
 ----
 %s
-`, string(out), service, *m)
+`, strings.TrimSpace(string(out)), service, *m)
+
+	data = strings.TrimSpace(data)
+
+	println(data)
+	os.Exit(0)
 
 	home, _ := os.UserHomeDir()
 	toilHome := filepath.Join(home, "toil")

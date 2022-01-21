@@ -4,9 +4,7 @@ Tiny program to track toil on key services.
 
 Whenever you start to work on a health task for a service, run:
 
-    $ toil [service] [-m msg]
-
-Note, `service` should autocomplete.
+    $ toil [-m msg] [service]
 
 Motivations:
 
