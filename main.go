@@ -96,7 +96,7 @@ func validateService(service string) {
 		}
 	}
 
-	fmt.Printf("Unrecognised or missing service: '%s'. Must exist in ~/toil/services.txt.\n", service)
+	fmt.Printf("Unrecognised or missing service arg: '%s'. Must exist in ~/toil/services.txt. Use -h for help.\n", service)
 	os.Exit(1)
 }
 
@@ -104,5 +104,6 @@ func readServicesConfig() []string {
 	servicesData, err := os.ReadFile(filepath.Join(toilHome, "services.txt"))
 	check(err, fmt.Sprintf("Unable to read ~/toil/services.txt file. Should contain a list of services separated by newline: %v", err))
 
-	return strings.Split(string(servicesData), "\n")
+	trimmed := strings.TrimSpace(string(servicesData))
+	return strings.Split(trimmed, "\n")
 }
