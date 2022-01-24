@@ -6,6 +6,9 @@ Whenever you start to work on a health task for a service, run:
 
     $ toil [-m msg] [service]
 
+Note, `toil` is a daily tracker, so if you work on a health task for more than
+one day in a row, run it again for each day of work.
+
 Motivations:
 
 - provide actual data on time spent on toil for key services
