@@ -52,6 +52,9 @@ service: %s
 	fileName := time.Now().Format(time.RFC3339)
 	filePath := filepath.Join(toilHome, fileName)
 
+	_, err = execGit(toilHome, "pull")
+	check(err, fmt.Sprintf("Unable to pull from main: '%v'", err))
+
 	err = os.WriteFile(filePath, []byte(data), 0777)
 	check(err, fmt.Sprintf("Unable to write toil file: '%v'", err))
 
