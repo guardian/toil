@@ -15,12 +15,17 @@ var toilHome = filepath.Join(home, "toil")
 
 func main() {
 
-	m := flag.String("m", "Describe your problem here.", "Optional description of task.")
+	m := flag.String("m", "", "Description of task.")
 	dryRun := flag.Bool("dryRun", false, "Prints out toil file and exits without writing to toil home and remote.")
 	h := flag.Bool("h", false, "Help info.")
 
 	flag.Parse()
 	service := flag.Arg(0)
+
+	if *m == "" {
+		fmt.Println("Required flag '-m' missing (note, must be *before* the service ID).")
+		os.Exit(1)
+	}
 
 	if *h {
 		fmt.Println("$ toil [-flag ...] [service]")
