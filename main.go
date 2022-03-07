@@ -47,7 +47,7 @@ service: %s
 %s
 `, strings.TrimSpace(string(out)), service, *m)
 
-	data = strings.TrimSpace(data)
+	data = strings.TrimSpace(data) + "\n"
 
 	if *dryRun {
 		println(data)
