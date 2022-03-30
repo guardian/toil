@@ -15,6 +15,17 @@ Motivations:
 - visibility into who works on what and gaps in team knowledge (e.g. if service
   X is only ever fixed by person Y)
 
+## Installation
+
+Ensure you have Go 1.17+ installed (`brew install go`) and then run:
+
+    go install github.com/guardian/toil
+
+The same command will apply any updates.
+
+Note, at the moment this is written for DevX use only, but please shout if you
+want to use it and we can sort something!
+
 # What actually happens?
 
 Toil is basically like the ticketing system described
