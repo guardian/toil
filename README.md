@@ -1,6 +1,11 @@
 # Toil
 
-Tiny program to track toil on key services.
+Not to be confused with TOIL (Time off in lieu)
+
+> Toil is the kind of work tied to running a production service that tends to be manual, repetitive, 
+> automatable, tactical, devoid of enduring value, and that scales linearly as a service grows.
+> 
+> -- [Goole Site Reliability Engineering book](https://sre.google/sre-book/eliminating-toil/)
 
 Whenever you start to work on a health task for a service, run:
 
